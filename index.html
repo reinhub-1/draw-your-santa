@@ -157,14 +157,24 @@
                         {!showAssignment ? (
                             <div className="space-y-4">
                                 {assignments.size > 0 && (
-                                    <div className="bg-blue-50 border border-blue-200 rounded p-4 text-blue-700">
-                                        <div className="mb-2">Share this link with all participants:</div>
-                                        <button 
-                                            onClick={copyShareLink}
-                                            className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center justify-center gap-2"
-                                        >
-                                            {copied ? '✓ Copied!' : 'Copy Share Link'}
-                                        </button>
+                                    <div className="space-y-4">
+                                        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                                            <div className="flex items-center">
+                                                <div className="text-yellow-700">
+                                                    <strong>⚠️ Important:</strong> Copy this link before refreshing or closing the page! 
+                                                    If you lose this link, you'll need to start over with new random assignments.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-blue-50 border border-blue-200 rounded p-4 text-blue-700">
+                                            <div className="mb-2">Share this link with all participants:</div>
+                                            <button 
+                                                onClick={copyShareLink}
+                                                className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center justify-center gap-2"
+                                            >
+                                                {copied ? '✓ Copied!' : 'Copy Share Link'}
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
