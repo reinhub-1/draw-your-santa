@@ -14,7 +14,25 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        // Memoized video component prevents re-mounting on every keystroke/state update
+        const IntroVideo = React.memo(() => (
+            <div className="w-full my-4">
+                <video 
+                    controls 
+                    autoPlay 
+                    muted 
+                    loop 
+                    playsInline
+                    className="w-full rounded-lg shadow-sm border"
+                >
+                    <source src="./assets/intro.mp4" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        ));
+
         const SecretSanta = () => {
+            const [showWelcome, setShowWelcome] = useState(true);
             const [setupMode, setSetupMode] = useState(true);
             const [participants, setParticipants] = useState([]);
             const [newParticipant, setNewParticipant] = useState('');
@@ -31,6 +49,7 @@
                         setParticipants(gameData.participants);
                         setAssignments(new Map(gameData.assignments));
                         setSetupMode(false);
+                        setShowWelcome(false); // Skip welcome if joining an active game link
                     } catch (e) {
                         console.error('Invalid game data');
                     }
@@ -85,17 +104,40 @@
                 }
             };
 
+            // 1. WELCOME PAGE (Video + Start Button)
+            if (showWelcome) {
+                return (
+                    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-8">
+                        <div className="text-2xl font-bold mb-4 flex items-center justify-center gap-2 text-center">
+                            <span role="img" aria-label="gift">🎁</span>
+                            Welcome to Family Secret Santa!
+                        </div>
+
+                        {/* Intro Video */}
+                        <IntroVideo />
+
+                        <button 
+                            onClick={() => setShowWelcome(false)}
+                            className="w-full mt-4 p-3 bg-red-600 text-white font-bold text-lg rounded-lg hover:bg-red-700 transition duration-200 shadow"
+                        >
+                            Start Secret Santa!
+                        </button>
+                    </div>
+                );
+            }
+
+            // 2. SETUP MODE (Adding Participants)
             if (setupMode) {
                 return (
-                    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+                    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-8">
                         <div className="text-2xl font-bold mb-6 flex items-center gap-2">
                             <span role="img" aria-label="gift">🎁</span>
-                            Family Secret Santa
+                            Family Secret Santa - Setup
                         </div>
                         
                         <div className="space-y-4">
                             <div className="bg-blue-50 border border-blue-200 rounded p-4 text-blue-700 mb-4">
-                                Add all family members, then start the game. You'll get a link to share with everyone!
+                                Add all family members, then generate the Secret Santa assignments!
                             </div>
 
                             <div className="flex gap-2">
@@ -129,16 +171,17 @@
                                 ))}
                             </div>
 
+                            {/* Generate Assignments Button / Alert */}
                             {participants.length >= 2 ? (
                                 <button 
                                     onClick={startGame}
                                     className="w-full p-2 bg-green-500 text-white rounded hover:bg-green-600"
                                 >
-                                    Start Secret Santa!
+                                    Generate Assignments & Share
                                 </button>
                             ) : (
                                 <div className="bg-yellow-50 border border-yellow-200 rounded p-4 text-yellow-700">
-                                    Add at least 2 family members to start
+                                    Add at least 2 family members to generate assignments
                                 </div>
                             )}
                         </div>
@@ -146,8 +189,9 @@
                 );
             }
 
+            // 3. GAMEPLAY MODE (Selecting name & revealing recipient)
             return (
-                <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+                <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-8">
                     <div className="text-2xl font-bold mb-6 flex items-center gap-2">
                         <span role="img" aria-label="gift">🎁</span>
                         Family Secret Santa
